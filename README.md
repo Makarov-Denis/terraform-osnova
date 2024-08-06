@@ -350,5 +350,237 @@ output "vm_instances_info" {
 5. Найдите и закоментируйте все, более не используемые переменные проекта.
 6. Проверьте terraform plan. Изменений быть не должно.
 
+### Решение
+
+Обновленный variables.tf 
+
+```
+variable "token" {
+  type        = string
+  description = "OAuth-token; https://cloud.yandex.ru/docs/iam/concepts/authorization/oauth-token"
+}
+
+variable "cloud_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/cloud/get-id"
+}
+
+variable "folder_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
+}
+
+variable "default_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "https://cloud.yandex.ru/docs/overview/concepts/geo-scope"
+}
+
+variable "default_cidr" {
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+  description = "https://cloud.yandex.ru/docs/vpc/operations/subnet-create"
+}
+
+variable "vpc_name" {
+  type        = string
+  default     = "develop"
+  description = "VPC network & subnet name"
+}
+
+variable "vms_ssh_root_key" {
+  type        = string
+  description = "ssh-keygen -t ed25519"
+}
+
+variable "vms_resources" {
+  type = map(map(any))
+  default = {
+    vm_web = {
+      core_fraction = 5
+      cores         = 2
+      memory        = 1
+    }
+    vm_db = {
+      core_fraction = 20
+      cores         = 2
+      memory        = 2
+    }
+  }
+  description = "Resource configurations for VMs"
+}
+
+variable "vms_metadata" {
+  type = map(string)
+  default = {
+    "serial-port-enable" = "1"
+    "ssh-keys"           = "ubuntu:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB+Un49iURjEWYb6tLytVstJT5/xZ9iTOGvo8QwLcU8a admden@admden-VirtualBox"
+  }
+  description = "Metadata for VMs"
+}
+
+```
+
+Обновил блоки ресурсов в main.tf, чтобы использовались новые переменные vms_resources и vms_metadata.
+
+```
+resource "yandex_vpc_network" "develop" {
+  name = var.vpc_name
+}
+
+resource "yandex_vpc_subnet" "develop" {
+  name           = var.vpc_name
+  zone           = var.default_zone
+  network_id     = yandex_vpc_network.develop.id
+  v4_cidr_blocks = var.default_cidr
+}
+
+resource "yandex_compute_instance" "platform" {
+  name        = local.vm_web_instance_name
+  platform_id = var.vm_web_platform_id
+  zone        = var.vm_web_zone
+
+  resources {
+    core_fraction = var.vms_resources.vm_web.core_fraction
+    cores         = var.vms_resources.vm_web.cores
+    memory        = var.vms_resources.vm_web.memory
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = var.vm_web_image_id
+      type     = var.vm_web_disk_type
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop.id
+    nat       = var.vm_web_nat
+  }
+
+  metadata = var.vms_metadata
+
+  scheduling_policy {
+    preemptible = var.vm_web_preemptible
+  }
+}
+
+resource "yandex_compute_instance" "platform_db" {
+  name        = local.vm_db_instance_name
+  platform_id = var.vm_db_platform_id
+  zone        = var.vm_db_zone
+
+  resources {
+    core_fraction = var.vms_resources.vm_db.core_fraction
+    cores         = var.vms_resources.vm_db.cores
+    memory        = var.vms_resources.vm_db.memory
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = var.vm_db_image_id
+      type     = var.vm_db_disk_type
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.develop.id
+    nat       = var.vm_db_nat
+  }
+
+  metadata = var.vms_metadata
+
+  scheduling_policy {
+    preemptible = var.vm_db_preemptible
+  }
+}
+
+output "external_ip_address" {
+  value = yandex_compute_instance.platform.network_interface.0.nat_ip_address
+}
+
+output "instance_id" {
+  value = yandex_compute_instance.platform.id
+}
+
+```
+
+Удаление неиспользуемых переменных. Удалил все неиспользуемые переменные из файла variables.tf.
+
+Обновленный variables.tf (без неиспользуемых переменных):
+
+```
+variable "token" {
+  type        = string
+  description = "OAuth-token; https://cloud.yandex.ru/docs/iam/concepts/authorization/oauth-token"
+}
+
+variable "cloud_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/cloud/get-id"
+}
+
+variable "folder_id" {
+  type        = string
+  description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
+}
+
+variable "default_zone" {
+  type        = string
+  default     = "ru-central1-a"
+  description = "https://cloud.yandex.ru/docs/overview/concepts/geo-scope"
+}
+
+variable "default_cidr" {
+  type        = list(string)
+  default     = ["10.0.1.0/24"]
+  description = "https://cloud.yandex.ru/docs/vpc/operations/subnet-create"
+}
+
+variable "vpc_name" {
+  type        = string
+  default     = "develop"
+  description = "VPC network & subnet name"
+}
+
+variable "vms_ssh_root_key" {
+  type        = string
+  description = "ssh-keygen -t ed25519"
+}
+
+variable "vms_resources" {
+  type = map(map(any))
+  default = {
+    vm_web = {
+      core_fraction = 5
+      cores         = 2
+      memory        = 1
+    }
+    vm_db = {
+      core_fraction = 20
+      cores         = 2
+      memory        = 2
+    }
+  }
+  description = "Resource configurations for VMs"
+}
+
+variable "vms_metadata" {
+  type = map(string)
+  default = {
+    "serial-port-enable" = "1"
+    "ssh-keys"           = "ubuntu:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB+Un49iURjEWYb6tLytVstJT5/xZ9iTOGvo8QwLcU8a admden@admden-VirtualBox"
+  }
+  description = "Metadata for VMs"
+}
+
+```
+
+В результате выполнения команды ```terraform plan``` видим что изменений не произошло.
+
+Результат представлен на скриншоте ниже:
+
+![последний изм 6](https://github.com/user-attachments/assets/e222face-0a57-4862-9bca-cd8d7250933e)
+
 ------
 

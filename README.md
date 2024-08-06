@@ -58,13 +58,13 @@
 
 5. На данных скриншотах представлено выполнение задания:
 
-![запуск](https://github.com/user-attachments/assets/dba44d0d-271a-484a-8546-2433d8c2b07f)
+![запуск](https://github.com/user-attachments/assets/422d53f6-b8c8-4769-8be2-eb5bfbd420a5)
 
-![облако](https://github.com/user-attachments/assets/b49c14ee-18ec-489c-92fd-b6163f30be5f)
+![облако](https://github.com/user-attachments/assets/eab35111-ee2b-4202-87dd-86b2d043b953)
 
-![подключение](https://github.com/user-attachments/assets/79ac38ee-f29a-4225-a75b-a0b375ce989c)
+![подключение](https://github.com/user-attachments/assets/cd880e2d-b67b-4c42-9cdf-18631bd6fac0)
 
-![проверка](https://github.com/user-attachments/assets/72cb52a2-8579-4bc5-a296-b71b878a6dba)
+![проверка](https://github.com/user-attachments/assets/1f4dd551-08f2-4d01-866f-e082545627e9)
 
 6. Параметры preemptible = true - это прерываемая ВМ, т.е. работает не более 24 часов и может быть остановлена Compute Cloud в любой момент.
 Параметр core_fraction = 5 - указывает базовую производительность ядра в процентах. Указывается для экономии ресурсов.
@@ -253,7 +253,7 @@ variable "vm_web_preemptible" {
 В результате выполнения команды ``` terraform plan ``` видим, что никаких изменений не произошло.
 Результат на скриншоте ниже:
 
-![изменение](https://github.com/user-attachments/assets/e0342137-7144-483b-9d55-585a6993062f)
+![изменение](https://github.com/user-attachments/assets/1fe16313-d6f6-4f31-8de0-8f4f3e9e150e)
 
 ### Задание 3
 
@@ -268,9 +268,9 @@ variable "vm_web_preemptible" {
 
 Результаты выполнения задания представлены на скриншотах ниже:
 
-![db](https://github.com/user-attachments/assets/a8fee1b0-5925-4948-8a84-5ba5bd3971a4)
+![db](https://github.com/user-attachments/assets/ff4ca54d-0ad5-4231-91f8-402093dbf677)
 
-![2 машина](https://github.com/user-attachments/assets/8bc0d706-350c-4449-b6eb-940a12491191)
+![2 машина](https://github.com/user-attachments/assets/4736016b-88b1-40bd-9dfc-ae454b5ca4c4)
 
 ### Задание 4
 
@@ -305,7 +305,6 @@ output "vm_instances_info" {
 ```
 Принял изменение. Также видим вывод значений ip-адресов команды terraform output. Представлено на скриншоте ниже:
 
-![outputs](https://github.com/user-attachments/assets/c1a70f2e-f6a7-46dd-8499-466f0053d652)
 
 ### Задание 5
 
@@ -313,6 +312,7 @@ output "vm_instances_info" {
 2. Замените переменные внутри ресурса ВМ на созданные вами local-переменные.
 3. Примените изменения.
 
+![outputs](https://github.com/user-attachments/assets/34122929-4ff2-4068-b563-917ce950d9b0)
 
 ### Задание 6
 
